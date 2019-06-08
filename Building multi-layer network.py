@@ -13,3 +13,7 @@ h = activation(torch.mm(inputs, w1) + b1)
 
 out = torch.mm(h, w2) + b2
 print (out)
+
+Caluculating probability of each number:
+def softmax(x):
+    return torch.exp(x)/torch.sum(torch.exp(x),dim=1).view(-1,1)
