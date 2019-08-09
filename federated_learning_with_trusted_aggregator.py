@@ -31,10 +31,35 @@ alices_opt =optim.SGD(params = alices_model.parameters(), lr = 0.1)
 
 bobs_opt.zero_grad()
 
-bobs_pred = bobs_model(bob_data)
-bobs_pred
+for i in range(10):
+  
+  bobs_pred = bobs_model(bob_data)
+  bobs_pred
+  bob_loss = ((bobs_pred-bob_target)**2).sum()
+  bob_loss.backward()
+  bobs_opt.step()
+  bob_loss= bob_loss.get().data
+  bob_loss
 
-bob_loss = ((bobs_pred-bob_target)**2).sum()
+  alices_pred = alices_model(alice_data)
+  alices_pred
+  alice_loss = ((alices_pred-alice_target)**2).sum()
+  alice_loss.backward()
+  alices_opt.step()
+  alice_loss= alice_loss.get().data
+  alice_loss
+  
+  
+alices_model.move(secure_worker)
+bobs_model.move(secure_worker)
 
-bob_loss.backward()
+secure_worker._objects
 
+#{4129790193: Parameter containing:
+# tensor([0.9300], requires_grad=True), 61697463307: Parameter containing:
+# tensor([[-0.6651, -0.4532]], requires_grad=True), 96242995578: Parameter containing:
+# tensor([-0.3225], requires_grad=True), 96389820255: Parameter containing:
+# tensor([[-0.9292,  0.1925]], requires_grad=True)}
+
+th.no_grad()
+model.weight.set_(((alices_model.weight.data + bobs_model.weight.data) / 2).get())
